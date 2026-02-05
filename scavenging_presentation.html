@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid DNS Scavenging: Value & Strategy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0089FF;
+            --accent: #00F5FF;
+            --danger: #F85149;
+            --success: #238636;
+            --bg: #0B0E14;
+            --surface: #161B22;
+            --card-bg: rgba(22, 27, 34, 0.8);
+            --text: #F0F6FC;
+            --text-dim: #8B949E;
+            --border: rgba(255, 255, 255, 0.1);
+            --glow: rgba(0, 137, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero / Introduction */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 137, 255, 0.15) 0%, transparent 80%);
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFF 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--text-dim);
+            max-width: 900px;
+            margin-bottom: 3rem;
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: var(--border);
+            border-radius: 50%;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--glow);
+            transform: scale(1.3);
+        }
+
+        /* Sections */
+        section {
+            min-height: 100vh;
+            padding: 6rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header span {
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Problem Section */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .problem-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: 32px;
+            border-left: 6px solid var(--danger);
+        }
+
+        /* Cause Visualizer */
+        .cause-box {
+            background: rgba(248, 81, 73, 0.05);
+            border: 1px dashed var(--danger);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        /* Solution Cards */
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .sol-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: 32px;
+            cursor: pointer;
+            transition: 0.4s;
+            position: relative;
+        }
+
+        .sol-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-10px);
+            background: linear-gradient(135deg, var(--surface) 0%, rgba(0, 137, 255, 0.05) 100%);
+        }
+
+        .sol-card .btn-more {
+            margin-top: 2rem;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Value / Savings Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            background: var(--surface);
+            border-radius: 40px;
+            padding: 4rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-wheel {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat h4 {
+            font-size: 3.5rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Modal / Overlay */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: var(--bg);
+            border: 1px solid var(--primary);
+            max-width: 900px;
+            width: 100%;
+            border-radius: 32px;
+            padding: 4rem;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-dim);
+        }
+
+        /* Common Elements */
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        li::before {
+            content: '→';
+            color: var(--primary);
+        }
+
+        .image-box {
+            border-radius: 24px;
+            overflow: hidden;
+            margin: 2rem 0;
+            border: 1px solid var(--border);
+        }
+
+        .image-box img {
+            width: 100%;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="nav-dots">
+        <div class="dot active" onclick="scrollToSection('hero')"></div>
+        <div class="dot" onclick="scrollToSection('problem')"></div>
+        <div class="dot" onclick="scrollToSection('cause')"></div>
+        <div class="dot" onclick="scrollToSection('solution')"></div>
+        <div class="dot" onclick="scrollToSection('value')"></div>
+    </div>
+
+    <!-- HERO -->
+    <section id="hero" class="hero">
+        <span>Hybrid DDI Strategy</span>
+        <h1>The Art of Scavenging</h1>
+        <p>From Network Chaos to Behavioral Governance. A roadmap for Infoblox management across On-Prem, AWS, Azure,
+            and Alibaba Cloud.</p>
+        <div class="image-box" style="max-width: 600px;">
+            <img src="./assets/hero.png" alt="Architecture">
+        </div>
+        <button class="btn" onclick="scrollToSection('problem')">Start the Journey</button>
+    </section>
+
+    <!-- THE PROBLEM -->
+    <section id="problem">
+        <div class="section-header">
+            <span>The Conflict</span>
+            <h2>The "Zombie" Record Epidemic</h2>
+            <p>Stale data isn't just clutter—it's a massive security and operational liability.</p>
+        </div>
+        <div class="problem-grid">
+            <div class="problem-card">
+                <h3>Technical Debt</h3>
+                <p>DNS zones carrying 30%+ stale records leads to slow resolution, IP conflicts, and failed automation
+                    deployments.</p>
+            </div>
+            <div class="problem-card">
+                <h3>The Takeover Risk</h3>
+                <p>CNAME records pointing to terminated cloud instances are the #1 vector for **Subdomain Takeovers**.
+                </p>
+            </div>
+            <div class="problem-card">
+                <h3>IPAM Collision</h3>
+                <p>Orphaned PTR records block new IP allocations, causing DHCP starvation and server provisioning
+                    failures.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE CAUSE -->
+    <section id="cause">
+        <div class="section-header">
+            <span>The Roots</span>
+            <h2>Why Does It Break?</h2>
+        </div>
+        <div class="dashboard">
+            <div>
+                <h3>The "Cloud Drift" Scenario</h3>
+                <p>Terraform destroys a VM, but the provider's API fails or the VPC doesn't communicate the change to
+                    the central DDI. The record remains, a "Ghost in the Machine."</p>
+                <div class="image-box">
+                    <img src="./assets/flow.png" alt="Logic Flow">
+                </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 20px;">
+                <h4>Chain of Failure</h4>
+                <ul style="margin-top: 1rem;">
+                    <li>Automation Script crashes</li>
+                    <li>API Rate Limits reached</li>
+                    <li>Nomadic clients disconnect</li>
+                    <li>Lease timers out of sync</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE SOLUTIONS -->
+    <section id="solution">
+        <div class="section-header">
+            <span>The Remedy</span>
+            <h2>Intelligent Restoration</h2>
+        </div>
+        <div class="solution-grid">
+            <div class="sol-card" onclick="openModal('sol-behavioral')">
+                <span>NIOS Native</span>
+                <h3>Behavioral Scavenging</h3>
+                <p>Stop relying on simple timers. Infoblox analyzes actual query traffic to see if a record is "Alive."
+                </p>
+                <div class="btn-more">Click to Deep Dive →</div>
+            </div>
+            <div class="sol-card" onclick="openModal('sol-cloud')">
+                <span>Multi-Cloud Integration</span>
+                <h3>Cloud Network Automation (CNA)</h3>
+                <p>Sync AWS Route 53, Azure DNS, and AliCloud via vDiscovery. If the VM is gone, the DNS record is
+                    purged.</p>
+                <div class="btn-more">Click to Deep Dive →</div>
+            </div>
+            <div class="sol-card" onclick="openModal('sol-tagging')">
+                <span>Governance</span>
+                <h3>Tag-Based Lifecycle</h3>
+                <p>Assign policy via Extensible Attributes (EAs). Isolate "Critical" systems from the automatic Reaper.
+                </p>
+                <div class="btn-more">Click to Deep Dive →</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE VALUE -->
+    <section id="value">
+        <div class="section-header">
+            <span>The ROI</span>
+            <h2>Value & Savings</h2>
+        </div>
+        <div class="dashboard">
+            <div class="stat-wheel">
+                <div class="stat">
+                    <h4>40%</h4>
+                    <p>Database Optimization</p>
+                </div>
+                <div class="stat">
+                    <h4>Zero</h4>
+                    <p>Subdomain Takeovers</p>
+                </div>
+                <div class="stat">
+                    <h4>85%</h4>
+                    <p>Operational Efficiency</p>
+                </div>
+            </div>
+            <div
+                style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
+                <p style="text-align: center;">By automating scavenging, you reclaim thousands of engineering hours
+                    spent on manual DNS cleanup.</p>
+                <a href="./RESEARCH_AND_PLAN.md" class="btn">Download Full Action Plan</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL SYSTEM -->
+    <div id="modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modal-body">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sections = ['hero', 'problem', 'cause', 'solution', 'value'];
+        const dots = document.querySelectorAll('.dot');
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = document.getElementById(section).offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section;
+                }
+            });
+
+            dots.forEach(dot => {
+                dot.classList.remove('active');
+                if (dot.getAttribute('onclick').includes(current)) {
+                    dot.classList.add('active');
+                }
+            });
+        });
+
+        const modalData = {
+            'sol-behavioral': `
+                <h2 style="color: var(--primary)">Behavioral Logic Deep-Dive</h2>
+                <hr style="margin: 2rem 0; border-color: var(--border)">
+                <h3>How it differs from Microsoft:</h3>
+                <p>While Microsoft waits for a lease timer to expire, Infoblox looks at "Last Queried Time."</p>
+                <ul style="margin-top: 2rem">
+                    <li><strong>Candidate Logic:</strong> Identifies records with no traffic for 14 days.</li>
+                    <li><strong>Safety Check:</strong> Cross-references DHCP/IPAM database.</li>
+                    <li><strong>Action:</strong> Marks as "Reclaimable" for human audit OR auto-deletes to Recycle Bin.</li>
+                </ul>
+            `,
+            'sol-cloud': `
+                <h2 style="color: var(--primary)">Hybrid Cloud Lifecycle Sync</h2>
+                <hr style="margin: 2rem 0; border-color: var(--border)">
+                <h3>Platform Specifics:</h3>
+                <ul style="margin-top: 2rem">
+                    <li><strong>AWS Route 53:</strong> vDiscovery polls API every 15 mins. Termination events trigger immediate DNS cleanup.</li>
+                    <li><strong>Azure DNS:</strong> Integration with Resource Groups. If the RG is deleted, the DNS zone and records are purged.</li>
+                    <li><strong>AliCloud:</strong> Managed via API Bridge. Uses Extensible Attributes to track "Time-to-Live on Cloud."</li>
+                </ul>
+            `,
+            'sol-tagging': `
+                <h2 style="color: var(--primary)">Tag-Based Governance</h2>
+                <hr style="margin: 2rem 0; border-color: var(--border)">
+                <h3>Smart Tag Mapping:</h3>
+                <p>Using Infoblox EAs (Extensible Attributes), we classify records by business criticality.</p>
+                <ul style="margin-top: 2rem">
+                    <li><strong>Policy: Gold</strong> (Internal Apps) - Never Scavenge.</li>
+                    <li><strong>Policy: Silver</strong> (Dev/Test) - Scavenge after 7 days idle.</li>
+                    <li><strong>Policy: Bronze</strong> (Cloud Temp) - Scavenge immediately on VM termination.</li>
+                </ul>
+            `
+        };
+
+        function openModal(type) {
+            document.getElementById('modal-body').innerHTML = modalData[type];
+            document.getElementById('modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+
+</html>
