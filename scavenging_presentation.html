@@ -4,22 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scavenging Strategy: Research & Analysis</title>
+    <title>Hybrid DDI | The Scavenging Initiative</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <style>
         :root {
             --primary: #00A3FF;
             --accent: #00FFF0;
             --danger: #FF3B3B;
-            --bg: #05070A;
-            --surface: #0E121A;
-            --card: rgba(14, 18, 26, 0.8);
+            --bg: #030508;
+            --surface: #0A0D14;
+            --card: rgba(14, 18, 26, 0.9);
             --border: rgba(255, 255, 255, 0.1);
-            --text-main: #FFFFFF;
+            --text: #FFFFFF;
             --text-dim: #94A3B8;
         }
 
@@ -31,363 +30,429 @@
 
         body {
             background-color: var(--bg);
-            color: var(--text-main);
+            color: var(--text);
             font-family: 'Outfit', sans-serif;
-            line-height: 1.6;
             overflow-x: hidden;
             scroll-behavior: smooth;
         }
 
-        .glass {
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-        }
-
-        /* --- Header / Hero --- */
-        .hero {
-            height: 100vh;
-            background-image: linear-gradient(to bottom, rgba(5, 7, 10, 0.5), var(--bg)), url('./assets/hero_premium.png');
+        /* Cinematic Background */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(3, 5, 8, 0.7), var(--bg)), url('./assets/hero_premium.png');
             background-size: cover;
             background-position: center;
+            z-index: -1;
+            transform: scale(1.1);
+        }
+
+        /* Voice/Narrator UI */
+        .narrator-ui {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--card);
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 30px rgba(0, 163, 255, 0.3);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .narrator-ui:hover {
+            transform: scale(1.05);
+        }
+
+        .voice-wave {
+            display: flex;
+            gap: 3px;
+            height: 20px;
+            align-items: center;
+        }
+
+        .wave-bar {
+            width: 3px;
+            background: var(--primary);
+            border-radius: 10px;
+            animation: wave 1s infinite alternate;
+        }
+
+        @keyframes wave {
+            to {
+                height: 5px;
+            }
+
+            from {
+                height: 20px;
+            }
+        }
+
+        /* Story Engine Sections */
+        .story-section {
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .badge {
-            padding: 0.5rem 1.5rem;
-            background: rgba(0, 163, 255, 0.1);
-            border: 1px solid var(--primary);
-            border-radius: 100px;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            font-size: 0.75rem;
-            margin-bottom: 2rem;
-        }
-
-        .hero h1 {
-            font-size: clamp(3rem, 10vw, 6rem);
-            font-weight: 900;
-            line-height: 1;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(180deg, #FFF 0%, #718096 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* --- Sections --- */
-        section {
-            padding: 8rem 2rem;
+            padding: 5rem;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        .section-tag {
+        .badge {
             color: var(--primary);
             font-family: 'JetBrains Mono', monospace;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        h2 {
-            font-size: 3rem;
-            margin-bottom: 3rem;
-            letter-spacing: -2px;
-        }
-
-        /* --- Problem Definition --- */
-        .problem-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-
-        .problem-card {
-            padding: 3rem;
-            border-top: 4px solid var(--danger);
-        }
-
-        .problem-card h3 {
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-            color: var(--danger);
-        }
-
-        /* --- Risk/Cost Matrix --- */
-        .risk-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 3rem;
-        }
-
-        .risk-table th,
-        .risk-table td {
-            padding: 2rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .risk-table th {
-            color: var(--primary);
             text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
+            letter-spacing: 5px;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        /* --- Proposed Options (Discussion Phase) --- */
-        .option-grid {
+        .badge::after {
+            content: "";
+            height: 2px;
+            width: 50px;
+            background: var(--primary);
+        }
+
+        h1 {
+            font-size: clamp(4rem, 15vw, 10rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 3rem;
+            background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Deep-Dive Cards */
+        .content-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 3rem;
+            margin-top: 4rem;
         }
 
-        .option-card {
-            padding: 4rem;
-            transition: transform 0.3s;
-        }
-
-        .option-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .option-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .intensity {
-            font-size: 0.7rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            background: var(--primary);
-        }
-
-        /* --- Comparison Table --- */
-        .comparison {
-            margin-top: 5rem;
-            overflow-x: auto;
-        }
-
-        .comp-table {
-            width: 100%;
+        .data-card {
+            background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            padding: 4rem;
+            border-radius: 32px;
+            transition: 0.5s;
+            position: relative;
+            overflow: hidden;
         }
 
-        .comp-table td {
-            padding: 1.5rem;
-            color: var(--text-dim);
-        }
-
-        .comp-table th {
-            background: rgba(0, 163, 255, 0.05);
-            padding: 1.5rem;
-            text-align: left;
-        }
-
-        /* --- Footer --- */
-        footer {
-            padding: 6rem 2rem;
-            text-align: center;
-            border-top: 1px solid var(--border);
-        }
-
-        .btn {
+        .data-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
             background: var(--primary);
-            color: white;
-            padding: 1rem 2.5rem;
-            border-radius: 100px;
-            text-decoration: none;
-            font-weight: 700;
-            display: inline-block;
+        }
+
+        .data-card h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .data-card p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .tech-snippet {
+            background: #000;
+            padding: 1.5rem;
+            border-radius: 12px;
             margin-top: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            border: 1px solid rgba(0, 255, 240, 0.1);
+        }
+
+        /* Navigation */
+        .nav-overlay {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            text-decoration: none;
+            color: #FFF;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+        }
+
+        /* Overlay */
+        .overlay-cinematic {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent, rgba(3, 5, 8, 0.9));
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .stat-block {
+            margin-top: 2rem;
+            display: flex;
+            gap: 3rem;
+        }
+
+        .stat-item h4 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .stat-item span {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        /* Timeline */
+        .timeline {
+            border-left: 2px solid var(--border);
+            padding-left: 2rem;
+            margin-top: 3rem;
+        }
+
+        .time-node {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .time-node::before {
+            content: "";
+            position: absolute;
+            left: -2.35rem;
+            top: 0.5rem;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
         }
     </style>
 </head>
 
 <body>
 
-    <header class="hero">
-        <div class="badge" data-aos="fade-down">Research & Analysis Phase</div>
-        <h1 data-aos="zoom-in">HYBRID DDI<br>SCAVENGING</h1>
-        <p data-aos="fade-up" style="font-size: 1.5rem; color: var(--text-dim);">Strategic Options for Governance across
-            Amazon Web Services, Azure, and On-Premises Grid.</p>
-    </header>
+    <div class="parallax-bg"></div>
+    <div class="overlay-cinematic"></div>
 
-    <!-- THE PROBLEM DEFINITION -->
-    <section>
-        <span class="section-tag" data-aos="fade-right">// 01. PROBLEM DEFINITION</span>
-        <h2>The State of Stale Records</h2>
-        <div class="problem-container">
-            <div class="glass problem-card" data-aos="fade-up">
-                <h3>Cloud Drift</h3>
-                <p>Cloud instances are ephemeral, but DNS records are persistent. Destroying a VPC or VM via
-                    Terraform/Ansible often leaves orphaned A and CNAME records pointing to dead space.</p>
+    <nav class="nav-overlay">
+        <a href="#intro" class="nav-link">Title</a>
+        <a href="#problem" class="nav-link">Problem</a>
+        <a href="#behavior" class="nav-link">Behavior</a>
+        <a href="#strategies" class="nav-link">Options</a>
+        <a href="#value" class="nav-link">Value</a>
+    </nav>
+
+    <div class="narrator-ui" id="narratorBtn" onclick="toggleSpeech()">
+        <div class="voice-wave" id="wave">
+            <div class="wave-bar" style="animation-delay: 0.1s"></div>
+            <div class="wave-bar" style="animation-delay: 0.3s"></div>
+            <div class="wave-bar" style="animation-delay: 0.5s"></div>
+            <div class="wave-bar" style="animation-delay: 0.2s"></div>
+        </div>
+        <span id="narratorStatus">Start Guided Tour (Voice Over)</span>
+    </div>
+
+    <!-- INTRO -->
+    <section class="story-section" id="intro">
+        <div class="badge" data-aos="fade-right">00 // PHASE: RESEARCH & ANALYSIS</div>
+        <h1 data-aos="zoom-out" data-aos-duration="2000">GHOST<br>IN THE GRID</h1>
+        <p style="font-size: 2rem; max-width: 800px; color: var(--text-dim);" data-aos="fade-up">
+            Our hybrid landscape is haunted by 40% stale records. It is time to implement a behavioral reaper.
+        </p>
+    </section>
+
+    <!-- THE PROBLEM Deep Dive -->
+    <section class="story-section" id="problem">
+        <div class="badge" data-aos="fade-right">01 // THE PROBLEM STATEMENT</div>
+        <h2 style="font-size: 4rem;" data-aos="fade-up">The Cost of Stagnation</h2>
+
+        <div class="content-grid">
+            <div class="data-card" data-aos="fade-up">
+                <h3>Cloud Drift Persistence</h3>
+                <p>When an AWS EC2 instance is terminated via CI/CD, Route53 logic often fails to propagate the deletion
+                    to our core Infoblox Grid. The result? A "Blind Record"</p>
+                <div class="stat-block">
+                    <div class="stat-item">
+                        <h4>14%</h4><span>Daily Drift</span>
+                    </div>
+                    <div class="stat-item">
+                        <h4>High</h4><span>Security Risk</span>
+                    </div>
+                </div>
             </div>
-            <div class="glass problem-card" data-aos="fade-up" data-aos-delay="100">
-                <h3>Temporal Mismatch</h3>
-                <p>Microsoft DNS relies on Aging/Scavenging intervals (temporal), which fails to account for actual
-                    network behavior (queries). This leads to "Zombie" records that look active but have zero queries.
-                </p>
-            </div>
-            <div class="glass problem-card" data-aos="fade-up" data-aos-delay="200">
-                <h3>IPAM Fragmentation</h3>
-                <p>Orphaned PTR records prevent IP reuse. In high-churn environments like AWS, this leads to artificial
-                    "IP Starvation" where subnets appear full but are actually empty.</p>
+            <div class="data-card" data-aos="fade-up" data-aos-delay="200">
+                <h3>Temporal Obsolescence</h3>
+                <p>Microsoft DNS Aging logic is purely temporal (timers). It can't tell the difference between a
+                    critical dormant backup server and a truly dead resource. We need **Behavioral Data.**</p>
+                <div class="tech-snippet">
+                    // MS Scavenging: Refresh + No-Refresh<br>
+                    // Result: High False Positives
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- EFFECT & COST -->
-    <section>
-        <span class="section-tag" data-aos="fade-right">// 02. EFFECT & COST</span>
-        <h2>Quantifying the Impact</h2>
-        <div class="glass" style="padding: 2rem;" data-aos="fade-up">
-            <table class="risk-table">
-                <thead>
-                    <tr>
-                        <th>Impact Category</th>
-                        <th>Outcome / Risk</th>
-                        <th>Operational Cost</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="color: var(--danger);">Security</td>
-                        <td>Subdomain Hijacking (Stale CNAME takeover)</td>
-                        <td>Critical Vulnerability Mitigation</td>
-                    </tr>
-                    <tr>
-                        <td style="color: var(--warning);">Performance</td>
-                        <td>Database Bloat (Search latency on large zones)</td>
-                        <td>Increased Hardware Utilization</td>
-                    </tr>
-                    <tr>
-                        <td style="color: var(--primary);">provisioning</td>
-                        <td>IP Collision & Deployment Failures</td>
-                        <td>Manual Engineering Intervention</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- PROPOSED SOLUTIONS (DISCUSSION) -->
-    <section>
-        <span class="section-tag" data-aos="fade-right">// 03. PROPOSED SOLUTIONS</span>
-        <h2>Comparison for Discussion</h2>
-        <div class="option-grid">
-            <!-- OPTION A -->
-            <div class="glass option-card" data-aos="fade-up">
-                <div class="option-header">
-                    <h3>Option A: Native CNA</h3>
-                    <span class="intensity">Low Effort</span>
+    <!-- INTEL Deep Dive -->
+    <section class="story-section" id="behavior">
+        <div class="badge" data-aos="fade-right">02 // BEHAVIORAL INTELLIGENCE</div>
+        <h2 style="font-size: 4rem;">Last Queried vs. Actual Existence</h2>
+        <div class="data-card" style="width: 100%; border-left: 10px solid var(--accent);">
+            <div class="content-grid" style="margin-top: 0;">
+                <div>
+                    <h3>WAPI 2.13.1 Signals</h3>
+                    <p>Infoblox v9.7 introduces enhanced `last_queried` metadata. This isn't just a timer; it's a pulse
+                        check. If a record has no query in 90 days, it's not a server anymore—it's a liability.</p>
                 </div>
-                <p>Leverage Infoblox Cloud Network Automation (CNA). Native API polling between the Grid and AWS/Azure.
-                </p>
-                <ul style="margin-top: 2rem; color: var(--text-dim);">
-                    <li>✔ Managed by Infoblox Support</li>
-                    <li>✔ Native "Reclaimable" state</li>
-                    <li>✖ Requires specialized licensing</li>
-                    <li>✖ Limited to CNA-supported regions</li>
-                </ul>
-            </div>
-
-            <!-- OPTION B -->
-            <div class="glass option-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="option-header">
-                    <h3>Option B: Async WAPI CLI</h3>
-                    <span class="intensity" style="background: var(--warning); color: #000;">Custom Flex</span>
+                <div class="tech-snippet">
+                    GET /wapi/v2.13.1/record:a?_return_fields=last_queried<br>
+                    { "name": "srv-01", "last_queried": 1672531200 }
                 </div>
-                <p>Build a specialized Python microservice using Async WAPI to bridge Cloud/On-Prem with a single
-                    "Reaper" logic.</p>
-                <ul style="margin-top: 2rem; color: var(--text-dim);">
-                    <li>✔ Highly customizable behavioral rules</li>
-                    <li>✔ Supports non-CNA cloud providers</li>
-                    <li>✖ Requires internal dev maintenance</li>
-                    <li>✖ High initial implementation labor</li>
-                </ul>
-            </div>
-
-            <!-- OPTION C -->
-            <div class="glass option-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="option-header">
-                    <h3>Option C: EA Governance</h3>
-                    <span class="intensity" style="background: var(--success); color: #000;">Strict Tagging</span>
-                </div>
-                <p>Manual policies enforced via Extensible Attributes (EAs). Records are deleted only when a "Lifecycle"
-                    tag expires.</p>
-                <ul style="margin-top: 2rem; color: var(--text-dim);">
-                    <li>✔ Most secure (No auto-delete)</li>
-                    <li>✔ Zero licensing impact</li>
-                    <li>✖ High manual review overhead</li>
-                    <li>✖ Relies on 100% accurate tagging</li>
-                </ul>
             </div>
         </div>
     </section>
 
-    <!-- DECISION MATRIX -->
-    <section>
-        <span class="section-tag" data-aos="fade-right">// 04. DECISION MATRIX</span>
-        <h2>Executive Selection Criteria</h2>
-        <div class="comparison" data-aos="fade-up">
-            <table class="comp-table">
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Option A (CNA)</th>
-                        <th>Option B (WAPI CLI)</th>
-                        <th>Option C (Tagging)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Implementation Speed</td>
-                        <td>Fast (Configuration)</td>
-                        <td>Medium (Build)</td>
-                        <td>Slow (Process change)</td>
-                    </tr>
-                    <tr>
-                        <td>License Cost</td>
-                        <td>High</td>
-                        <td>Low</td>
-                        <td>Zero</td>
-                    </tr>
-                    <tr>
-                        <td>Scalability (Hybrid)</td>
-                        <td>Limited</td>
-                        <td>Excellent</td>
-                        <td>Manual</td>
-                    </tr>
-                    <tr>
-                        <td>Governance Control</td>
-                        <td>Native</td>
-                        <td>Dynamic</td>
-                        <td>Static</td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- SOLUTIONS -->
+    <section class="story-section" id="strategies">
+        <div class="badge" data-aos="fade-right">03 // STRATEGIC APPROACHES</div>
+        <div class="content-grid">
+            <!-- OPTION 1 -->
+            <div class="data-card" data-aos="fade-right">
+                <span style="color: var(--primary); font-weight: 800;">PATH ALPHA</span>
+                <h3>Native CNA Polling</h3>
+                <p>Use Infoblox Cloud Network Automation. Direct API-to-API sync between AWS R53 and the Grid.</p>
+                <div class="timeline">
+                    <div class="time-node"><strong>Pro:</strong> Vendor supported, zero-code.</div>
+                    <div class="time-node"><strong>Con:</strong> Expensive licensing per vDiscovery job.</div>
+                </div>
+            </div>
+            <!-- OPTION 2 -->
+            <div class="data-card" data-aos="fade-left"
+                style="background: linear-gradient(135deg, var(--bg) 0%, rgba(0, 163, 255, 0.05) 100%);">
+                <span style="color: var(--accent); font-weight: 800;">PATH BETA (Recommended)</span>
+                <h3>Managed Reaper Service</h3>
+                <p>A Python Async microservice using WAPI 2.13.1. Unified logic for On-Prem & All Clouds.</p>
+                <div class="timeline">
+                    <div class="time-node"><strong>Pro:</strong> Zero license cost, high customization.</div>
+                    <div class="time-node"><strong>Con:</strong> Requires internal engineering maintenance.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VALUE -->
+    <section class="story-section" id="value"
+        style="background-image: url('./assets/impact_macro.png'); background-size: cover;">
+        <div class="badge">04 // THE ROI</div>
+        <h1>RECLAIM<br>THE GRID</h1>
+        <div class="content-grid"
+            style="background: rgba(0,0,0,0.8); padding: 4rem; border-radius: 40px; backdrop-filter: blur(20px);">
+            <div class="stat-item">
+                <h4>400+</h4><span>Hours Saved / Year</span>
+            </div>
+            <div class="stat-item">
+                <h4>ZERO</h4><span>Subdomain Takeovers</span>
+            </div>
+            <div class="stat-item">
+                <h4>100%</h4><span>Asset Visibility</span>
+            </div>
+        </div>
+        <div style="margin-top: 4rem; display: flex; gap: 2rem;">
+            <a href="https://github.com/tshoush/2026-02-04-Scavenging" target="_blank" class="nav-link"
+                style="padding: 2rem 4rem; font-size: 1.2rem; background: var(--primary);">Access Research Repo</a>
         </div>
     </section>
 
     <footer>
-        <h2 style="font-size: 2rem;">Next Step: Select Path & Define POC</h2>
-        <a href="./ARCHITECTURE_PLAN.md" class="btn">Review Implementation Detail</a>
-        <p style="margin-top: 4rem; color: var(--text-dim);">Internal Presentation: Research Phase v1.1. <br>
-            tshoush@aol.com</p>
+        <p>&copy; 2026 Hybrid Infrastructure Intelligence. Research & Analysis Phase.</p>
     </footer>
 
-    <script>AOS.init();</script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        const sentences = [
+            "Welcome to the Research and Analysis phase for our Hybrid DDI Scavenging strategy.",
+            "Our primary objective is to solve the Zombie Record problem. Currently, our grid is haunted by stale data that leads to security risks and operational bloat.",
+            "We have identified three core issues: Cloud Drift, where decommissioned AWS resources leave permanent ghosts in our DNS.",
+            "Temporal Mismatch, where legacy Microsoft scavenging fails to account for actual network behavior.",
+            "And IPAM fragmentation, which prevents our teams from scaling effectively.",
+            "Our proposed solution relies on Infoblox v9.7 Behavioral Intelligence. By using WAPI v2.13.1, we can analyze the 'Last Queried' signal to make intelligent reclamation decisions.",
+            "We propose two primary paths: Native CNA polling for ease of use, or a Managed Reaper Service for high flexibility and zero license cost.",
+            "Ultimately, this is about more than just cleanup. It is about total grid intelligence and security. Thank you for reviewing the research."
+        ];
+
+        let synth = window.speechSynthesis;
+        let speaking = false;
+        let currentIdx = 0;
+
+        function toggleSpeech() {
+            if (!speaking) {
+                speaking = true;
+                document.getElementById('narratorStatus').innerText = "Tour in Progress...";
+                document.getElementById('wave').style.display = "flex";
+                speakNext();
+            } else {
+                synth.cancel();
+                speaking = false;
+                document.getElementById('narratorStatus').innerText = "Start Guided Tour (Voice Over)";
+                document.getElementById('wave').style.display = "none";
+            }
+        }
+
+        function speakNext() {
+            if (currentIdx < sentences.length && speaking) {
+                let utter = new SpeechSynthesisUtterance(sentences[currentIdx]);
+                utter.rate = 1.0;
+                utter.pitch = 0.9;
+                utter.onend = () => {
+                    currentIdx++;
+                    speakNext();
+                };
+                synth.speak(utter);
+            } else {
+                speaking = false;
+                currentIdx = 0;
+                document.getElementById('narratorStatus').innerText = "Tour Complete / Restart";
+                document.getElementById('wave').style.display = "none";
+            }
+        }
+    </script>
 </body>
 
 </html>
