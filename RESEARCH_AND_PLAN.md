@@ -1,11 +1,11 @@
-# Hybrid-Cloud DNS Scavenging Strategy (Infoblox)
-
-## 1. Executive Summary
-This document outlines the strategic implementation of DNS scavenging across a hybrid landscape consisting of a core Infoblox Grid and public cloud zones (AWS Route 53, Azure DNS, and Alibaba Cloud). The goal is to move from manual record management to an automated, behavioral-based lifecycle.
+## 2. Technical Assets & Repository
+- **Management CLI:** `scavenger_cli.py` (High-concurrency Async Engine)
+- **Strategy Presentation:** `scavenging_presentation.html` (Interactive Stakeholder View)
+- **Repository:** [tshoush/2026-02-04-Scavenging](https://github.com/tshoush/2026-02-04-Scavenging)
 
 ---
 
-## 2. Use Cases & Problem Statement
+## 3. Use Cases & Problem Statement
 - **Cloud Drift:** Temporary instances (EC2/VMs) created via CI/CD often leave "ghost" records if de-provisioning scripts fail.
 - **Dynamic Churn:** DDNS updates from nomadic clients (VPN/Office) clutter zones with stale entries.
 - **Security Visibility:** Stale A/CNAME records pose a "Subdomain Takeover" risk.
