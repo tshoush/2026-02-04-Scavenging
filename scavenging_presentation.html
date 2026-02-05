@@ -4,509 +4,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hybrid DNS Scavenging: Value & Strategy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Hybrid Scavenging | Cinematic Strategy</title>
+    <!-- Premium Typography -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Animation Libraries -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            --primary: #0089FF;
-            --accent: #00F5FF;
-            --danger: #F85149;
-            --success: #238636;
-            --bg: #0B0E14;
-            --surface: #161B22;
-            --card-bg: rgba(22, 27, 34, 0.8);
-            --text: #F0F6FC;
-            --text-dim: #8B949E;
-            --border: rgba(255, 255, 255, 0.1);
-            --glow: rgba(0, 137, 255, 0.4);
+            --primary: #00A3FF;
+            --accent: #00FFF0;
+            --warning: #FFB800;
+            --danger: #FF3B3B;
+            --success: #00E072;
+            --bg: #05070A;
+            --surface: #0E121A;
+            --card: rgba(14, 18, 26, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #FFFFFF;
+            --text-dim: #94A3B8;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
             background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        /* Hero / Introduction */
+        /* --- UI Components --- */
+        .glass-panel {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+        }
+
+        .neo-button {
+            background: linear-gradient(135deg, var(--primary) 0%, #0055FF 100%);
+            color: white;
+            padding: 1.25rem 2.5rem;
+            border-radius: 100px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0, 85, 255, 0.3);
+        }
+
+        .neo-button:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 85, 255, 0.5);
+            filter: brightness(1.1);
+        }
+
+        /* --- Hero Section --- */
         .hero {
+            position: relative;
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: radial-gradient(circle at 50% 50%, rgba(0, 137, 255, 0.15) 0%, transparent 80%);
             padding: 2rem;
+            background-image: linear-gradient(to bottom, rgba(5, 7, 10, 0.4), var(--bg)), url('./assets/hero_premium.png');
+            background-size: cover;
+            background-position: center;
         }
 
-        .hero h1 {
-            font-size: clamp(3rem, 10vw, 6rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, #FFF 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-            letter-spacing: -2px;
-        }
-
-        .hero p {
-            font-size: 1.5rem;
-            color: var(--text-dim);
-            max-width: 900px;
-            margin-bottom: 3rem;
-        }
-
-        /* Navigation Dots */
-        .nav-dots {
-            position: fixed;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 100;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            background: var(--border);
-            border-radius: 50%;
-            margin: 1rem 0;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .dot.active {
-            background: var(--primary);
-            box-shadow: 0 0 10px var(--glow);
-            transform: scale(1.3);
-        }
-
-        /* Sections */
-        section {
-            min-height: 100vh;
-            padding: 6rem 2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-header h2 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .section-header span {
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        /* Problem Section */
-        .problem-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-
-        .problem-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 3rem;
-            border-radius: 32px;
-            border-left: 6px solid var(--danger);
-        }
-
-        /* Cause Visualizer */
-        .cause-box {
-            background: rgba(248, 81, 73, 0.05);
-            border: 1px dashed var(--danger);
-            padding: 2rem;
-            border-radius: 20px;
-            margin-top: 2rem;
-        }
-
-        /* Solution Cards */
-        .solution-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-
-        .sol-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 3rem;
-            border-radius: 32px;
-            cursor: pointer;
-            transition: 0.4s;
-            position: relative;
-        }
-
-        .sol-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-10px);
-            background: linear-gradient(135deg, var(--surface) 0%, rgba(0, 137, 255, 0.05) 100%);
-        }
-
-        .sol-card .btn-more {
-            margin-top: 2rem;
-            color: var(--primary);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Value / Savings Dashboard */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            background: var(--surface);
-            border-radius: 40px;
-            padding: 4rem;
-            border: 1px solid var(--border);
-        }
-
-        .stat-wheel {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-        }
-
-        .stat h4 {
-            font-size: 3.5rem;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        /* Modal / Overlay */
-        .modal {
-            position: fixed;
+        .hero-vignette {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
+            background: radial-gradient(circle at center, transparent 0%, var(--bg) 90%);
+            pointer-events: none;
         }
 
-        .modal-content {
-            background: var(--bg);
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 163, 255, 0.1);
             border: 1px solid var(--primary);
-            max-width: 900px;
-            width: 100%;
-            border-radius: 32px;
+            border-radius: 100px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 12vw, 7rem);
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: -3px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(180deg, #FFFFFF 0%, #718096 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Layout Sections --- */
+        section {
+            padding: 10rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-tag {
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 4rem;
+            letter-spacing: -2px;
+        }
+
+        /* --- The Problem (Grid) --- */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+        }
+
+        .problem-card {
             padding: 4rem;
             position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
+            transition: all 0.5s;
         }
 
-        .close-modal {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
+        .problem-card:hover {
+            border-color: var(--danger);
+            background: rgba(255, 59, 59, 0.05);
+        }
+
+        .problem-card h3 {
             font-size: 2rem;
-            cursor: pointer;
+            margin-bottom: 1.5rem;
+            color: var(--danger);
+        }
+
+        .problem-card p {
             color: var(--text-dim);
+            font-size: 1.25rem;
+            line-height: 1.8;
         }
 
-        /* Common Elements */
-        .btn {
-            background: var(--primary);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 0 20px var(--glow);
-        }
-
-        ul {
-            list-style: none;
-        }
-
-        li {
-            margin-bottom: 0.8rem;
+        /* --- Integration Matrix --- */
+        .matrix {
+            margin-top: 5rem;
             display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
+            gap: 2rem;
+            flex-wrap: wrap;
         }
 
-        li::before {
-            content: '→';
-            color: var(--primary);
+        .matrix-item {
+            flex: 1;
+            min-width: 300px;
+            padding: 3rem;
+            text-align: center;
         }
 
-        .image-box {
-            border-radius: 24px;
-            overflow: hidden;
-            margin: 2rem 0;
-            border: 1px solid var(--border);
+        .matrix-item img {
+            width: 80px;
+            margin-bottom: 2rem;
+            filter: grayscale(1) invert(1);
+            opacity: 0.5;
+            transition: 0.3s;
         }
 
-        .image-box img {
-            width: 100%;
-            display: block;
+        .matrix-item:hover img {
+            filter: grayscale(0) invert(0);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* --- Interactive Demo --- */
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .console {
+            background: #000;
+            padding: 2rem;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #00FF00;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.1);
+        }
+
+        /* --- ROI Dashboard --- */
+        .roi-dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .roi-card {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .roi-val {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 8rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            background: linear-gradient(to top, rgba(0, 163, 255, 0.05), transparent);
+        }
+
+        /* Animations */
+        [data-aos] {
+            transition-duration: 1000ms !important;
+        }
+
+        @media (max-width: 900px) {
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+
+            .roi-dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 4rem;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="nav-dots">
-        <div class="dot active" onclick="scrollToSection('hero')"></div>
-        <div class="dot" onclick="scrollToSection('problem')"></div>
-        <div class="dot" onclick="scrollToSection('cause')"></div>
-        <div class="dot" onclick="scrollToSection('solution')"></div>
-        <div class="dot" onclick="scrollToSection('value')"></div>
-    </div>
-
-    <!-- HERO -->
-    <section id="hero" class="hero">
-        <span>Hybrid DDI Strategy</span>
-        <h1>The Art of Scavenging</h1>
-        <p>From Network Chaos to Behavioral Governance. A roadmap for Infoblox management across On-Prem, AWS, Azure,
-            and Alibaba Cloud.</p>
-        <div class="image-box" style="max-width: 600px;">
-            <img src="./assets/hero.png" alt="Architecture">
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-vignette"></div>
+        <div class="hero-content">
+            <div class="badge" data-aos="fade-down">Infoblox Enterprise v9.7</div>
+            <h1 data-aos="zoom-in" data-aos-delay="200">BEYOND<br>CLEANUP</h1>
+            <p data-aos="fade-up" data-aos-delay="400">Behavioral DDI Scavenging for the Multi-Cloud Era.</p>
+            <div style="margin-top: 4rem;" data-aos="fade-up" data-aos-delay="600">
+                <a href="#discovery" class="neo-button">Experience the Strategy</a>
+            </div>
         </div>
-        <button class="btn" onclick="scrollToSection('problem')">Start the Journey</button>
-    </section>
+    </header>
 
     <!-- THE PROBLEM -->
-    <section id="problem">
-        <div class="section-header">
-            <span>The Conflict</span>
-            <h2>The "Zombie" Record Epidemic</h2>
-            <p>Stale data isn't just clutter—it's a massive security and operational liability.</p>
-        </div>
+    <section id="discovery">
+        <span class="section-tag" data-aos="fade-right">// THE CHALLENGE</span>
+        <h2 class="section-title" data-aos="fade-up">A Broken Lifecycle</h2>
+
         <div class="problem-grid">
-            <div class="problem-card">
-                <h3>Technical Debt</h3>
-                <p>DNS zones carrying 30%+ stale records leads to slow resolution, IP conflicts, and failed automation
-                    deployments.</p>
+            <div class="glass-panel problem-card" data-aos="fade-up" data-aos-delay="100">
+                <h3>Ghost Drift</h3>
+                <p>Temporary AWS/Azure resources deleted via CI/CD pipelines leave orphaned DNS records. This "Cloud
+                    Drift" creates a silent security vacuum.</p>
             </div>
-            <div class="problem-card">
-                <h3>The Takeover Risk</h3>
-                <p>CNAME records pointing to terminated cloud instances are the #1 vector for **Subdomain Takeovers**.
-                </p>
+            <div class="glass-panel problem-card" data-aos="fade-up" data-aos-delay="200"
+                style="border-left: 6px solid var(--danger);">
+                <h3>Subdomain Hijack</h3>
+                <p>Every stale CNAME is a vulnerability. Attackers monitor these orphans to host malicious content on
+                    your trusted corporate subdomains.</p>
             </div>
-            <div class="problem-card">
-                <h3>IPAM Collision</h3>
-                <p>Orphaned PTR records block new IP allocations, causing DHCP starvation and server provisioning
-                    failures.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- THE CAUSE -->
-    <section id="cause">
-        <div class="section-header">
-            <span>The Roots</span>
-            <h2>Why Does It Break?</h2>
-        </div>
-        <div class="dashboard">
-            <div>
-                <h3>The "Cloud Drift" Scenario</h3>
-                <p>Terraform destroys a VM, but the provider's API fails or the VPC doesn't communicate the change to
-                    the central DDI. The record remains, a "Ghost in the Machine."</p>
-                <div class="image-box">
-                    <img src="./assets/flow.png" alt="Logic Flow">
-                </div>
-            </div>
-            <div style="background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 20px;">
-                <h4>Chain of Failure</h4>
-                <ul style="margin-top: 1rem;">
-                    <li>Automation Script crashes</li>
-                    <li>API Rate Limits reached</li>
-                    <li>Nomadic clients disconnect</li>
-                    <li>Lease timers out of sync</li>
-                </ul>
+            <div class="glass-panel problem-card" data-aos="fade-up" data-aos-delay="300">
+                <h3>DDI Starvation</h3>
+                <p>Legacy IPAM records block new allocations. Scale shouldn't be limited by records that haven't been
+                    queried since 2023.</p>
             </div>
         </div>
     </section>
 
-    <!-- THE SOLUTIONS -->
-    <section id="solution">
-        <div class="section-header">
-            <span>The Remedy</span>
-            <h2>Intelligent Restoration</h2>
-        </div>
-        <div class="solution-grid">
-            <div class="sol-card" onclick="openModal('sol-behavioral')">
-                <span>NIOS Native</span>
-                <h3>Behavioral Scavenging</h3>
-                <p>Stop relying on simple timers. Infoblox analyzes actual query traffic to see if a record is "Alive."
-                </p>
-                <div class="btn-more">Click to Deep Dive →</div>
-            </div>
-            <div class="sol-card" onclick="openModal('sol-cloud')">
-                <span>Multi-Cloud Integration</span>
-                <h3>Cloud Network Automation (CNA)</h3>
-                <p>Sync AWS Route 53, Azure DNS, and AliCloud via vDiscovery. If the VM is gone, the DNS record is
-                    purged.</p>
-                <div class="btn-more">Click to Deep Dive →</div>
-            </div>
-            <div class="sol-card" onclick="openModal('sol-tagging')">
-                <span>Governance</span>
-                <h3>Tag-Based Lifecycle</h3>
-                <p>Assign policy via Extensible Attributes (EAs). Isolate "Critical" systems from the automatic Reaper.
-                </p>
-                <div class="btn-more">Click to Deep Dive →</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- THE VALUE -->
-    <section id="value">
-        <div class="section-header">
-            <span>The ROI</span>
-            <h2>Value & Savings</h2>
-        </div>
-        <div class="dashboard">
-            <div class="stat-wheel">
-                <div class="stat">
-                    <h4>40%</h4>
-                    <p>Database Optimization</p>
-                </div>
-                <div class="stat">
-                    <h4>Zero</h4>
-                    <p>Subdomain Takeovers</p>
-                </div>
-                <div class="stat">
-                    <h4>85%</h4>
-                    <p>Operational Efficiency</p>
-                </div>
-            </div>
+    <!-- THE SOLUTION: IMPACT IMAGE -->
+    <section style="padding: 0;">
+        <div class="glass-panel"
+            style="height: 600px; width: 100%; border-radius: 0; background-image: url('./assets/impact_macro.png'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
             <div
-                style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
-                <p style="text-align: center;">By automating scavenging, you reclaim thousands of engineering hours
-                    spent on manual DNS cleanup.</p>
-                <a href="./RESEARCH_AND_PLAN.md" class="btn">Download Full Action Plan</a>
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 7, 10, 0.6);">
+            </div>
+            <div style="position: relative; z-index: 5; text-align: center; max-width: 800px; padding: 2rem;">
+                <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1.5rem;">Intelligent Behavioral Analysis
+                </h2>
+                <p style="font-size: 1.5rem; color: var(--text-dim);">We don't just use timers. We use reality. By
+                    monitoring real-time query behavior across On-Prem and Cloud, Infoblox heals your network from the
+                    inside out.</p>
             </div>
         </div>
     </section>
 
-    <!-- MODAL SYSTEM -->
-    <div id="modal" class="modal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div id="modal-body">
-                <!-- Dynamic Content -->
+    <!-- LIVE DEMO / CONSOLE -->
+    <section>
+        <div class="demo-container">
+            <div data-aos="fade-right">
+                <span class="section-tag">// THE TECHNOLOGY</span>
+                <h2 class="section-title">O(N) Scavenger Engine</h2>
+                <p style="font-size: 1.25rem; color: var(--text-dim); margin-bottom: 2rem; line-height: 1.8;">
+                    Our Python-driven Async WAPI client scales to millions of records. It synchronizes cloud lifecycle
+                    events from AWS Route 53, Azure, and Alibaba Cloud with your core Infoblox Grid.
+                </p>
+                <div style="margin-top: 2rem;">
+                    <ul style="list-style: none; color: var(--accent);">
+                        <li style="margin-bottom: 1rem;">✔ Async Concurrency (Semaphore Guarded)</li>
+                        <li style="margin-bottom: 1rem;">✔ DHCP Lease Integrity Checking</li>
+                        <li style="margin-bottom: 1rem;">✔ Multi-Cloud EA Tag Synchronization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 1rem;" data-aos="zoom-in">
+                <div
+                    style="margin-bottom: 1rem; color: var(--text-dim); font-size: 0.8rem; display: flex; justify-content: space-between;">
+                    <span>scavenger_cli --mode=audit --target=all</span>
+                    <span>NIOS 9.7 ONLINE</span>
+                </div>
+                <div class="console" id="console">
+                    > Initializing Scavenger Bot...<br>
+                    > Authenticated as: admin_scavenger<br>
+                    > Fetching AWS Route 53 zones... (Found 12)<br>
+                    > Fetching On-Prem zones... (Found 45)<br>
+                    > Analyzing record:a [15,400 total]<br>
+                </div>
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button class="neo-button" style="padding: 0.75rem 2rem; font-size: 0.8rem;"
+                        onclick="simulateScan()">Run Live Reconciliation</button>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
+    <!-- ROI DASHBOARD -->
+    <section>
+        <div class="section-header" style="text-align: center;">
+            <span class="section-tag" data-aos="fade-right">// THE VALUE</span>
+            <h2 class="section-title" data-aos="fade-up">Business Realization</h2>
+        </div>
+
+        <div class="roi-dashboard">
+            <div class="glass-panel roi-card" data-aos="flip-left" data-aos-delay="100">
+                <div class="roi-val">40%</div>
+                <p style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">DB Optimization</p>
+            </div>
+            <div class="glass-panel roi-card" data-aos="flip-left" data-aos-delay="300"
+                style="background: linear-gradient(135deg, rgba(0, 163, 255, 0.1) 0%, transparent 100%);">
+                <div class="roi-val">ZERO</div>
+                <p style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">Ghost Records</p>
+            </div>
+            <div class="glass-panel roi-card" data-aos="flip-left" data-aos-delay="500">
+                <div class="roi-val">85%</div>
+                <p style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">Auto-Healing</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 5rem;" class="glass-panel" data-aos="fade-up">
+            <canvas id="savingsChart" style="padding: 3rem; max-height: 400px;"></canvas>
+        </div>
+    </section>
+
+    <!-- FOOTER / CTAs -->
     <footer>
-        <p>&copy; 2026 Hybrid DDI Solutions Engineering. Premium Scavenging Strategy.</p>
-        <p style="margin-top: 1rem;"><a href="https://github.com/tshoush/2026-02-04-Scavenging" target="_blank"
-                style="color: var(--text-dim); text-decoration: none; font-size: 0.9rem;">GitHub:
-                tshoush/2026-02-04-Scavenging</a></p>
+        <h2 style="font-size: 3rem; margin-bottom: 3rem;">Ready to heal your network?</h2>
+        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+            <a href="./RESEARCH_AND_PLAN.md" class="neo-button"
+                style="background: transparent; border: 1px solid var(--primary);">View Blueprint</a>
+            <a href="https://github.com/tshoush/2026-02-04-Scavenging" target="_blank" class="neo-button">Access Source
+                Code</a>
+        </div>
+        <p style="margin-top: 5rem; color: var(--text-dim);">Built for 192.168.1.50 & 172.16.x.x Networks. &copy; 2026
+        </p>
     </footer>
 
     <script>
-        const sections = ['hero', 'problem', 'cause', 'solution', 'value'];
-        const dots = document.querySelectorAll('.dot');
+        AOS.init();
 
-        function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        // Console Simulation
+        const logs = [
+            "[!] SCANNING AWS-PROD-VPC-01...",
+            "[X] Found STALE record: web-01.aws.internal (Last queried: 45 days ago)",
+            "[X] Found STALE record: temp-db.aws.internal (Instance Terminated)",
+            "[!] SCANNING ON-PREM-V6-VLAN...",
+            "[X] Found ZOMBIE record: old-printer.corp (No query monitor traffic)",
+            "[+] Reconciling tags for 15 records...",
+            "[*] BATCH READY: 165 records marked as RECLAIMABLE",
+            "[SUCCESS] Generated affected_records_review.csv for review."
+        ];
+
+        function simulateScan() {
+            const consoleBox = document.getElementById('console');
+            let idx = 0;
+            const interval = setInterval(() => {
+                if (idx < logs.length) {
+                    consoleBox.innerHTML += `<br>> ${logs[idx]}`;
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                    idx++;
+                } else {
+                    clearInterval(interval);
+                    consoleBox.innerHTML += `<br>> [DONE] Analysis Complete.`;
+                }
+            }, 800);
         }
 
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = document.getElementById(section).offsetTop;
-                if (pageYOffset >= sectionTop - 100) {
-                    current = section;
+        // Charting Logic
+        const ctx = document.getElementById('savingsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                datasets: [{
+                    label: 'Calculated Database Health (%)',
+                    data: [60, 62, 65, 80, 85, 92, 98, 99],
+                    borderColor: '#00A3FF',
+                    backgroundColor: 'rgba(0, 163, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: 'white', font: { family: 'Outfit', size: 14 } } }
+                },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
+                    x: { grid: { color: 'transparent' }, ticks: { color: '#94A3B8' } }
                 }
-            });
-
-            dots.forEach(dot => {
-                dot.classList.remove('active');
-                if (dot.getAttribute('onclick').includes(current)) {
-                    dot.classList.add('active');
-                }
-            });
+            }
         });
-
-        const modalData = {
-            'sol-behavioral': `
-                <h2 style="color: var(--primary)">Behavioral Logic Deep-Dive</h2>
-                <hr style="margin: 2rem 0; border-color: var(--border)">
-                <h3>How it differs from Microsoft:</h3>
-                <p>While Microsoft waits for a lease timer to expire, Infoblox looks at "Last Queried Time."</p>
-                <ul style="margin-top: 2rem">
-                    <li><strong>Candidate Logic:</strong> Identifies records with no traffic for 14 days.</li>
-                    <li><strong>Safety Check:</strong> Cross-references DHCP/IPAM database.</li>
-                    <li><strong>Action:</strong> Marks as "Reclaimable" for human audit OR auto-deletes to Recycle Bin.</li>
-                </ul>
-            `,
-            'sol-cloud': `
-                <h2 style="color: var(--primary)">Hybrid Cloud Lifecycle Sync</h2>
-                <hr style="margin: 2rem 0; border-color: var(--border)">
-                <h3>Platform Specifics:</h3>
-                <ul style="margin-top: 2rem">
-                    <li><strong>AWS Route 53:</strong> vDiscovery polls API every 15 mins. Termination events trigger immediate DNS cleanup.</li>
-                    <li><strong>Azure DNS:</strong> Integration with Resource Groups. If the RG is deleted, the DNS zone and records are purged.</li>
-                    <li><strong>AliCloud:</strong> Managed via API Bridge. Uses Extensible Attributes to track "Time-to-Live on Cloud."</li>
-                </ul>
-            `,
-            'sol-tagging': `
-                <h2 style="color: var(--primary)">Tag-Based Governance</h2>
-                <hr style="margin: 2rem 0; border-color: var(--border)">
-                <h3>Smart Tag Mapping:</h3>
-                <p>Using Infoblox EAs (Extensible Attributes), we classify records by business criticality.</p>
-                <ul style="margin-top: 2rem">
-                    <li><strong>Policy: Gold</strong> (Internal Apps) - Never Scavenge.</li>
-                    <li><strong>Policy: Silver</strong> (Dev/Test) - Scavenge after 7 days idle.</li>
-                    <li><strong>Policy: Bronze</strong> (Cloud Temp) - Scavenge immediately on VM termination.</li>
-                </ul>
-            `
-        };
-
-        function openModal(type) {
-            document.getElementById('modal-body').innerHTML = modalData[type];
-            document.getElementById('modal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
     </script>
 </body>
 
