@@ -142,6 +142,19 @@ class InfobloxScavenger:
             print(f"\n[!] Dry Run Complete.")
             print(f"    - Technical Manifest (JSON): {json_filename}")
             print(f"    - Review File for Business (CSV): {csv_filename}")
+            
+            # Export Live Summary for Presentation
+            summary_data = {
+                "total_records": len(records),
+                "total_candidates": len(candidates),
+                "cloud_candidates": cloud_count,
+                "onprem_candidates": onprem_count,
+                "health_percentage": round(((len(records) - len(candidates)) / len(records)) * 100, 1) if records else 100,
+                "last_run": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            with open("live_scavenging_summary.json", "w") as f:
+                json.dump(summary_data, f, indent=4)
+            print(f"    - Live Presentation Data: live_scavenging_summary.json")
 
 async def main():
     print("=== Infoblox Hybrid Scavenger CLI (v9.7) ===")

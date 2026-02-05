@@ -378,23 +378,27 @@
     <!-- VALUE -->
     <section class="story-section" id="value"
         style="background-image: url('./assets/impact_macro.png'); background-size: cover;">
-        <div class="badge">04 // THE ROI</div>
+        <div class="badge">04 // THE ROI (LIVE DATA)</div>
         <h1>RECLAIM<br>THE GRID</h1>
         <div class="content-grid"
             style="background: rgba(0,0,0,0.8); padding: 4rem; border-radius: 40px; backdrop-filter: blur(20px);">
             <div class="stat-item">
-                <h4>400+</h4><span>Hours Saved / Year</span>
+                <h4 id="statCandidates">--</h4><span>Zombie Records Found</span>
             </div>
             <div class="stat-item">
-                <h4>ZERO</h4><span>Subdomain Takeovers</span>
+                <h4 id="statHealth">--%</h4><span>Overall Grid Health</span>
             </div>
             <div class="stat-item">
-                <h4>100%</h4><span>Asset Visibility</span>
+                <h4 id="statTotal">--</h4><span>Total Records Scanned</span>
             </div>
         </div>
+        <p id="lastRun"
+            style="margin-top: 1rem; color: var(--accent); font-family: 'JetBrains Mono'; font-size: 0.8rem;"></p>
         <div style="margin-top: 4rem; display: flex; gap: 2rem;">
+            <button onclick="loadLiveData()" class="nav-link"
+                style="padding: 1.5rem 3rem; background: var(--success); cursor: pointer;">Sync Live CLI Data</button>
             <a href="https://github.com/tshoush/2026-02-04-Scavenging" target="_blank" class="nav-link"
-                style="padding: 2rem 4rem; font-size: 1.2rem; background: var(--primary);">Access Research Repo</a>
+                style="padding: 1.5rem 3rem;">Access Research Repo</a>
         </div>
     </section>
 
@@ -405,6 +409,43 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
+
+        async function loadLiveData() {
+            try {
+                const response = await fetch('./live_scavenging_summary.json');
+                const data = await response.json();
+
+                // Animate numbers
+                animateValue("statCandidates", 0, data.total_candidates, 1000);
+                animateValue("statHealth", 0, data.health_percentage, 1000, "%");
+                animateValue("statTotal", 0, data.total_records, 1000);
+
+                document.getElementById('lastRun').innerText = "DATA SOURCE: " + data.last_run + " (WAPI v2.13.1 Active)";
+
+                // Update voice narration if playing
+                if (speaking) {
+                    let liveSummary = `Analysis complete. We have identified ${data.total_candidates} zombie records out of a total of ${data.total_records}. Our current grid health is ${data.health_percentage} percent.`;
+                    let utter = new SpeechSynthesisUtterance(liveSummary);
+                    synth.speak(utter);
+                }
+            } catch (err) {
+                alert("Please run 'python scavenger_cli.py' first to generate live data.");
+            }
+        }
+
+        function animateValue(id, start, end, duration, suffix = "") {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start) + suffix;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
 
         const sentences = [
             "Welcome to the Research and Analysis phase for our Hybrid DDI Scavenging strategy.",
